@@ -1,4 +1,3 @@
-// Datos de ejemplo — puedes editar/añadir productos para Hombre/Mujer/Accesorios.
 export const products = [
   {
     id: 1,
