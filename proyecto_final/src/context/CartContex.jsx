@@ -1,53 +1,48 @@
 import React, { createContext, useContext, useState } from "react";
 
-const CartContext = createContext();
-export const useCart = () => useContext(CartContext);
+const CartContext = createContext(null);
 
-/*
-  Carrito global:
-  - cart: array de { id, qty, product }
-  - addToCart(product) => si existe id incrementa qty, sino push
-  - removeFromCart(productId) => elimina
-  - clearCart()
-  - total
-  - isOpen, setIsOpen para controlar drawer
-*/
+export function CartProvider({ children }) {
+  const [cart, setCart] = useState([]);
+  const [open, setOpen] = useState(false);
 
-export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]); // {id, qty, product}
-  const [isOpen, setIsOpen] = useState(false);
-
-  const addToCart = (product) => {
-    setCart(prev => {
-      const found = prev.find(p => p.id === product.id);
-      if (found) {
-        return prev.map(p => p.id === product.id ? { ...p, qty: p.qty + 1 } : p);
-      }
-      return [...prev, { id: product.id, qty: 1, product }];
+  const addToCart = (item) => {
+    setCart((prev) => {
+      const exists = prev.find((p) => p.id === item.id);
+      if (exists) return prev.map((p) => (p.id === item.id ? { ...p, qty: p.qty + 1 } : p));
+      return [...prev, { ...item, qty: 1 }];
     });
-    setIsOpen(true);
+    setOpen(true);
+  };
+
+  const decreaseQty = (id) => {
+    setCart((prev) =>
+      prev.flatMap((p) => {
+        if (p.id !== id) return p;
+        if (p.qty > 1) return { ...p, qty: p.qty - 1 };
+        return [];
+      })
+    );
   };
 
   const removeFromCart = (id) => {
-    setCart(prev => prev.filter(item => item.id !== id));
-  };
-
-  const decrementQty = (id) => {
-    setCart(prev => prev.flatMap(item => {
-      if (item.id !== id) return item;
-      if (item.qty > 1) return { ...item, qty: item.qty - 1 };
-      return []; // remove if qty reaches 0
-    }));
+    setCart((prev) => prev.filter((p) => p.id !== id));
   };
 
   const clearCart = () => setCart([]);
-  const total = cart.reduce((s, it) => s + it.product.price * it.qty, 0);
+  const toggleCart = () => setOpen((v) => !v);
+  const openCart = () => setOpen(true);
+  const closeCart = () => setOpen(false);
 
   return (
-    <CartContext.Provider value={{
-      cart, addToCart, removeFromCart, decrementQty, clearCart, total, isOpen, setIsOpen
-    }}>
+    <CartContext.Provider value={{ cart, addToCart, decreaseQty, removeFromCart, clearCart, open, toggleCart, openCart, closeCart }}>
       {children}
     </CartContext.Provider>
   );
-};
+}
+
+export function useCart() {
+  return useContext(CartContext);
+}
+
+export default CartProvider;

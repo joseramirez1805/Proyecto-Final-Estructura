@@ -19,7 +19,7 @@ export default function CardItem({ product }) {
           {oldPrice && <span className="old-price">${oldPrice}</span>}
         </div>
 
-        {/* overlay shown on hover (handled by CSS) */}
+        {}
         <div className="overlay-btn" onClick={() => addToCart(product)}>
           <span>🛒</span>
           <span>Agregar al Carrito</span>
