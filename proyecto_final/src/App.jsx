@@ -1,6 +1,11 @@
-import Inicio from './pages/Inicio.jsx';
+import React from "react";
+import { CartProvider } from "./context/CartContext";
+import Index from "./pages/Index";
 
 export default function App() {
-  // El componente App ahora delega la UI de inicio al componente Inicio
-  return <Inicio />;
+  return (
+    <CartProvider>
+      <Index />
+    </CartProvider>
+  );
 }
