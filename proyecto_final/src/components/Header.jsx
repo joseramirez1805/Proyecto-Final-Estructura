@@ -1,6 +1,5 @@
 import React from "react";
-import { useCart } from "../context/CartContext";
-
+import { useCart } from "../context/CartContex";
 export default function Header() {
   const { cart, setIsOpen } = useCart();
 
