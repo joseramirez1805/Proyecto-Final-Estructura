@@ -13,7 +13,7 @@ export const products = [
     category: "Ropa de Mujer",
     name: "Pantalones Casuales Mujer",
     price: 64.99,
-    image: "https://images.unsplash.com/photo-1520975698519-3a7c3e1b4b46?auto=format&fit=crop&w=800&q=60",
+    image: "https://images-cdn.ubuy.com.sa/667c32e1bf2e7c34260101fd-tozo-upgraded-2024-a1-wirless-earbuds.jpg",
   },
   {
     id: 3,

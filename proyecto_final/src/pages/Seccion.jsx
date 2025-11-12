@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Cabecera from "../components/Cabecera";
 import GridCategorias from "../components/GridCategorias";
 import { SAMPLE, SUB_OPTIONS } from "../utils/datos";
+import Banner from "../components/Banner";
 
 function useQuery() {
   const { search } = useLocation();
@@ -17,33 +18,28 @@ export default function Seccion() {
 
   const items = useMemo(() => {
     const base = SAMPLE[section] || [];
-    if (sub === "todas") return base;
-    return base.filter((i) => i.subcategory.toLowerCase() === sub.toLowerCase());
+    if (sub === "todas" || sub === "Todos" || sub === "todas") return base;
+    return base.filter((i) => i.subcategory && i.subcategory.toLowerCase() === sub.toLowerCase());
   }, [section, sub]);
 
   const subOptions = SUB_OPTIONS[section] || ["todas"];
 
   const handleSetSub = (s) => {
-    const search = s === "todas" ? "" : `?sub=${encodeURIComponent(s)}`;
+    const search = (s === "todas" || s === "Todos") ? "" : `?sub=${encodeURIComponent(s)}`;
     navigate(`/seccion/${section}${search}`, { replace: true });
   };
 
   return (
     <div>
       <Cabecera />
-      {section === "inicio" && (
-        <section className="banner-section">
-          <div className="container banner-text">
-            <small>Nueva colección</small>
-            <h1>Bienvenido a la tienda</h1>
-            <p>Descubre nuestros productos destacados y promociones exclusivas.</p>
-          </div>
-        </section>
-      )}
+
+      {section === "inicio" ? (
+        <Banner />
+      ) : null}
 
       <main className="main container">
-        <h1 style={{ textTransform: "capitalize" }}>{section}</h1>
-        <p className="subtitle">Explora nuestra selección en {section}</p>
+        <h1 style={{ textTransform: "capitalize" }}>{section === "inicio" ? "Inicio" : section}</h1>
+        <p className="subtitle">Explora nuestra selección en {section === "inicio" ? "Inicio" : section}</p>
 
         <div className="filters" aria-hidden>
           {Object.keys(SAMPLE).map((key) => (
@@ -71,7 +67,7 @@ export default function Seccion() {
                 cursor: "pointer"
               }}
             >
-              {opt === "todas" ? "Todas" : opt}
+              {opt === "todas" || opt === "Todos" ? "Todas" : opt}
             </button>
           ))}
         </div>

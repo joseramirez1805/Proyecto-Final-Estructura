@@ -40,7 +40,7 @@ body{
 }
 
 .banner-section{
-  background-image: url('https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=1600&q=60');
+  background-image: url('https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=2000&q=60');
   background-size:cover;
   background-position:center;
   color: white;
@@ -163,9 +163,130 @@ body{
 .process-btn{ background:var(--primary); color:white; width:100%; padding:12px; border-radius:12px; border:none; cursor:pointer; margin-bottom:8px; }
 .clear-btn{ width:100%; padding:10px; border-radius:12px; border:1px solid #ddd; background:#fff; cursor:pointer; }
 
-@media (max-width:720px){
+.menu { display:flex; align-items:center; gap:6px; }
+.menu .nav-item { position:relative; font-weight:500; color:#111; }
+.menu .nav-item.active { background:#f3f4f6; border-radius:12px; box-shadow:0 4px 18px rgba(15,15,20,0.04); }
+.menu .nav-item:hover { background:#f8fafc; }
+.menu .nav-item .nav-caret { font-size:12px; opacity:0.8; }
+
+/* Underline style for Inicio (visual thin line under text when active) */
+.menu .nav-item.active.nav-label:after {}
+
+/* asegurar zona activa entre el item y el dropdown */
+.nav-item-wrapper {
+  position: relative;
+  padding-bottom: 14px; /* ampliar zona activa para evitar gap al mover el mouse */
+}
+
+/* Dropdown panel (posicionado justo debajo y con transición) */
+.nav-dropdown {
+  position: absolute;
+  top: 100%; /* justo debajo del wrapper */
+  left: 0;
+  margin-top: 6px;
+  background: #fff;
+  border-radius: 12px;
+  min-width: 260px;
+  padding: 8px;
+  box-shadow: 0 18px 40px rgba(10,10,20,0.08);
+  border: 1px solid rgba(0,0,0,0.05);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
+  z-index: 160;
+  pointer-events: none;
+}
+
+/* mostrar dropdown cuando el wrapper tiene la clase .open (control JS) */
+.nav-item-wrapper.open .nav-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* mantener fallback hover behavior */
+.nav-item-wrapper:hover .nav-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Links dentro del dropdown */
+.nav-dropdown-link {
+  display: block;
+  padding: 10px 12px;
+  color: #0b0b1d;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.98rem;
+}
+.nav-dropdown-link:hover { background: #f8fafc; }
+
+/* reducir gap visual y mantener apariencia del item activo */
+.menu .nav-item.active {
+  box-shadow: none;
+  border-bottom: 3px solid #0b0b1d;
+  border-radius: 0;
+  padding-bottom: 6px;
+}
+
+/* Banner - mantener diseño de la imagen */
+.banner-section {
+  padding: 80px 0;
+  background-image: url('https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=2000&q=60');
+  background-size: cover;
+  background-position: center;
+}
+.banner-text{
+  display:inline-block;
+  max-width:760px;
+  margin-left:40px;
+  background-color: rgba(243,244,246,0.95);
+  padding:22px 26px;
+  border-radius:14px;
+  line-height:1.1;
+  color:#0b0b1d;
+  box-shadow: 0 8px 30px rgba(10,10,20,0.06);
+}
+.banner-text h1{
+  font-size:56px;
+  margin:6px 0 8px;
+  color:#0b0b1d;
+  font-weight:800;
+}
+.banner-text small{
+  color:#6b7280;
+  font-weight:700;
+  letter-spacing:1px;
+}
+.banner-text p{ color:#374151; font-size:1rem; margin-top:4px; }
+
+/* small pill for stack/count next to title */
+.banner-stack {
+  display:inline-block;
+  margin-left:12px;
+  background:#fff;
+  color:#0b0b1d;
+  padding:6px 10px;
+  border-radius:12px;
+  border:1px solid #eee;
+  font-size:0.85rem;
+  font-weight:700;
+}
+
+/* ensure nav search shrinks on small screens */
+@media (max-width: 980px) {
   .search-bar input{ width:180px; }
-  .banner-text h1{ font-size:32px; }
+  .banner-text h1{ font-size:36px; }
+  .nav-dropdown { left:auto; right:0; }
+}
+
+@media (max-width:720px){
+  .search-bar input{ width:160px; }
+  .banner-text h1{ font-size:28px; }
   .product-grid{ grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); }
   .cart-drawer{ width:100%; }
 }
