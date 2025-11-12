@@ -46,10 +46,40 @@ body{
   color: white;
   padding:100px 0;
 }
-.banner-text{ max-width:700px; margin-left:40px; }
-.banner-text small{ opacity:0.9; display:block; margin-bottom:12px; letter-spacing:1px; }
-.banner-text h1{ font-size:48px; margin-bottom:12px; }
-.banner-text p{ color:rgba(255,255,255,0.9); margin-bottom:18px; line-height:1.5; }
+.banner-text{
+  display:inline-block;
+  max-width:700px;
+  margin-left:40px;
+  background-color:#eee;
+  padding:12px 18px;
+  border-radius:16px; /* bordes redondos */
+  line-height:1.4;
+  overflow-wrap:break-word; /* ajusta el texto */
+}
+
+.banner-text small{
+  opacity:0.9;
+  display:block;
+  margin-bottom:8px;
+  letter-spacing:1px;
+  color:#0b0b1d;
+  background:transparent;
+  padding:0;
+}
+
+.banner-text h1{
+  font-size:48px;
+  margin:0 0 8px;
+  color:#0b0b1d;
+  background:transparent;
+}
+
+.banner-text p{
+  color:#0b0b1d;
+  margin:0;
+  line-height:1.5;
+  background:transparent;
+}
 
 .main{
   padding:40px 20px;
