@@ -5,6 +5,7 @@ import Seccion from "./pages/Seccion";
 import CajonCarrito from "./components/CajonCarrito";
 import { FavoritesProvider } from "./context/FavoritesContext"; // <- agregado
 import CajonFavoritos from "./components/CajonFavoritos"; // <- agregado
+import Footer from "./components/Footer";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/seccion/inicio" replace />} />
           <Route path="/seccion/:section" element={<Seccion />} />
         </Routes>
+        <Footer />
       </CartProvider>
     </FavoritesProvider>
   );

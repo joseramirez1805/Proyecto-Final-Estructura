@@ -15,12 +15,34 @@ export default function Seccion() {
   const query = useQuery();
   const navigate = useNavigate();
   const sub = query.get("sub") || "todas";
+  const q = (query.get("q") || "").trim();
 
   const items = useMemo(() => {
+    // si hay query de búsqueda, buscar en todos los productos y devolver coincidencias
+    if (q) {
+      const map = new Map();
+      Object.keys(SAMPLE).forEach((k) => {
+        // ignorar la colección 'inicio' para evitar duplicados indirectos
+        if (k === 'inicio') return;
+        (SAMPLE[k] || []).forEach((p) => {
+          if (!map.has(p.id)) map.set(p.id, p);
+        });
+      });
+      const all = Array.from(map.values());
+      const qLower = q.toLowerCase();
+      return all.filter((p) => {
+        return (
+          (p.name || '').toLowerCase().includes(qLower) ||
+          (p.category || '').toLowerCase().includes(qLower) ||
+          (p.subcategory || '').toLowerCase().includes(qLower)
+        );
+      });
+    }
+
     const base = SAMPLE[section] || [];
     if (sub === "todas" || sub === "Todos" || sub === "todas") return base;
     return base.filter((i) => i.subcategory && i.subcategory.toLowerCase() === sub.toLowerCase());
-  }, [section, sub]);
+  }, [section, sub, q]);
 
   const subOptions = SUB_OPTIONS[section] || ["todas"];
 
@@ -33,16 +55,21 @@ export default function Seccion() {
     <div>
       <Cabecera />
 
-      {section === "inicio" ? (
+      {section === "inicio" && !q ? (
         <Banner />
       ) : null}
 
       <main className="main container">
-        <h1 style={{ textTransform: "capitalize" }}>{section === "inicio" ? "Inicio" : section}</h1>
-        <p className="subtitle">Descubre nuestra selección cuidadosamente elegida de los mejores productos</p>
+        <h1 style={{ textTransform: "capitalize" }}>
+          {q ? `Resultados` : (section === "inicio" ? "Inicio" : section)}
+        </h1>
+        <p className="subtitle">
+          {q ? `Resultados de búsqueda para "${q}" — ${items.length} productos` : 'Descubre nuestra selección cuidadosamente elegida de los mejores productos'}
+        </p>
 
         {}
-        {section !== "inicio" && (
+  {/* ocultar filtros si estamos en búsqueda o en inicio */}
+  {(!q && section !== "inicio") && (
           <>
             <div className="filters" aria-hidden>
               {Object.keys(SAMPLE).map((key) => (

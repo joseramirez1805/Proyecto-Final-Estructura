@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContex";
 import { useFavorites } from "../context/FavoritesContext";
 import { useAuth } from "../context/AuthContext";
 import { SUB_OPTIONS } from "../utils/datos";
 
 export default function Cabecera() {
-  const { toggleCart } = useCart();
+  const { toggleCart, cart } = useCart();
+  const navigate = useNavigate();
+
+  const [searchTerm, setSearchTerm] = React.useState("");
   const { toggleFavorites, favorites } = useFavorites();
-  const { user, loading, error: authErrorFromCtx, register, login, logout } = useAuth();
+  const { user, loading, error: authErrorFromCtx, register, login } = useAuth();
 
   const [openKey, setOpenKey] = useState(null);
   const hideTimer = useRef(null);
@@ -123,7 +126,15 @@ export default function Cabecera() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div className="search-bar">
-            <input placeholder="Buscar productos..." />
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const q = (searchTerm || "").trim();
+              if (!q) return;
+              // navegar a la sección de inicio con el query q
+              navigate(`/seccion/inicio?q=${encodeURIComponent(q)}`);
+            }}>
+              <input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Buscar productos..." />
+            </form>
           </div>
 
           <button
@@ -168,7 +179,22 @@ export default function Cabecera() {
             </button>
           )}
 
-          <button onClick={toggleCart} style={{ padding: 8, borderRadius: 8 }}>Carrito</button>
+          {/* Botón de carrito: icono + contador */}
+          <button
+            onClick={toggleCart}
+            className="icon-btn"
+            title="Carrito"
+            aria-label="Carrito"
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding:8, borderRadius:8, position: 'relative' }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45C8.89 16.37 9.5 17.5 10.5 17.5h8v-2h-7.1c-.14 0-.25-.11-.25-.25l.03-.12L14.1 12h4.45c.75 0 1.41-.41 1.75-1.03l1.95-3.93L20.42 4H7z" fill="#0f172a"/>
+            </svg>
+            {/* mostrar contador si hay items en el carrito */}
+            {cart?.length > 0 && (
+              <span className="cart-badge" aria-hidden>{cart.length}</span>
+            )}
+          </button>
         </div>
       </div>
 

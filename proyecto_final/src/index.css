@@ -292,7 +292,7 @@ body{
   font-weight:700;
   letter-spacing:1px;
 }
-.banner-text p{ color:#374151; font-size:1rem; margin-top:4px; }
+.banner-text p{ color:#0b0b1d; font-size:1rem; margin-top:6px; font-weight:500; }
 
 /* Estilos para los botones dentro del banner */
 .banner-cta{
@@ -429,3 +429,44 @@ input:focus {
 
 /* efecto suave para el dropdown (ya definido, pero reforzamos) */
 .nav-dropdown { transition: opacity 160ms ease, transform 160ms ease, visibility 160ms; }
+
+/* Footer styles */
+.site-footer{ background:#0f1724; color:#cbd5e1; margin-top:40px; }
+.site-footer .footer-top{ display:flex; gap:30px; padding:48px 20px; align-items:flex-start; }
+.site-footer .newsletter{ flex:1 1 40%; }
+.site-footer .newsletter h3{ color:#fff; margin-bottom:6px; }
+.site-footer .newsletter p{ color:#9ca3af; margin-bottom:12px; }
+.newsletter-form{ display:flex; gap:10px; align-items:center; }
+.newsletter-form input{ flex:1; padding:12px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:inherit }
+.newsletter-form button{ padding:10px 14px; border-radius:8px; border:none; background:#fff; color:#0b0b1d; font-weight:700; cursor:pointer }
+.site-footer .footer-links{ flex:1 1 60%; display:flex; gap:28px; }
+.site-footer .footer-links .col h4{ color:#fff; margin-bottom:8px; }
+.site-footer .footer-links .col p{ color:#9ca3af; font-size:0.95rem }
+.site-footer .footer-links .col ul{ list-style:none; padding:0; margin:0; color:#cbd5e1 }
+.site-footer .footer-links .col ul li{ margin-bottom:8px; font-size:0.95rem }
+.site-footer .socials{ display:flex; gap:10px; margin-top:10px }
+.site-footer .socials a{ width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:rgba(255,255,255,0.04); color:#fff; text-decoration:none }
+.footer-bottom{ border-top:1px solid rgba(255,255,255,0.03); padding:18px 0; text-align:center; }
+
+@media (max-width: 900px){
+  .site-footer .footer-top{ flex-direction:column; }
+  .site-footer .footer-links{ flex-wrap:wrap; }
+}
+
+/* contador pequeño para el carrito en la cabecera */
+.cart-badge{
+  position:absolute;
+  top:-6px;
+  right:-6px;
+  background:#e11d48;
+  color:#fff;
+  min-width:18px;
+  height:18px;
+  padding:0 6px;
+  border-radius:999px;
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 6px 12px rgba(0,0,0,0.14);
+}
