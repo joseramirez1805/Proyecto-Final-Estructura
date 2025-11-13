@@ -1,5 +1,6 @@
 import React from "react";
 import { useCart } from "../context/CartContex";
+import { FiShoppingCart } from "react-icons/fi";
 
 export default function TarjetaProducto({ item }) {
   const { addToCart } = useCart();
@@ -15,9 +16,11 @@ export default function TarjetaProducto({ item }) {
         )}
         <button className="favorite-btn" aria-label="favorito">❤</button>
 
-        <div className="overlay-btn" onClick={() => addToCart(item)}>
-          <span>Añadir</span>
-        </div>
+        {/* Botón overlay: ahora muestra icono + texto 'Agregar al Carrito' pero mantiene la misma funcionalidad */}
+        <button type="button" className="overlay-btn" onClick={() => addToCart(item)} aria-label={`Agregar ${item.name} al carrito`}>
+          <FiShoppingCart style={{ marginRight: 8 }} />
+          <span>Agregar al Carrito</span>
+        </button>
       </div>
 
       <div className="card-info">

@@ -1,6 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Banner(){
+  const navigate = useNavigate();
+
+  const goHome = () => navigate('/seccion/inicio');
+  const goOffers = () => navigate('/seccion/ofertas');
+
   return (
     <section className="banner-section">
       <div className="banner-text container">
@@ -8,8 +14,8 @@ export default function Banner(){
         <h1>Estilo que te define</h1>
         <p>Descubre las últimas tendencias en moda. Calidad premium, diseños exclusivos y envío gratuito en compras superiores a $50.</p>
         <div style={{display:'flex',gap:12, marginTop:16}}>
-          <button style={{padding:'8px 16px', borderRadius:8, border:'none', background:'#fff'}}>Comprar Ahora</button>
-          <button style={{padding:'8px 16px', borderRadius:8, border:'none', background:'rgba(255,255,255,0.85)'}}> </button>
+          <button onClick={goHome} className="banner-cta">Comprar Ahora</button>
+          <button onClick={goOffers} className="banner-cta-secondary">Ofertas Especiales</button>
         </div>
       </div>
     </section>

@@ -39,38 +39,43 @@ export default function Seccion() {
 
       <main className="main container">
         <h1 style={{ textTransform: "capitalize" }}>{section === "inicio" ? "Inicio" : section}</h1>
-        <p className="subtitle">Explora nuestra selección en {section === "inicio" ? "Inicio" : section}</p>
+        <p className="subtitle">Descubre nuestra selección cuidadosamente elegida de los mejores productos</p>
 
-        <div className="filters" aria-hidden>
-          {Object.keys(SAMPLE).map((key) => (
-            <button
-              key={key}
-              className={key === section ? "active" : ""}
-              onClick={() => navigate(`/seccion/${key}`)}
-            >
-              {key.charAt(0).toUpperCase() + key.slice(1)}
-            </button>
-          ))}
-        </div>
+        {}
+        {section !== "inicio" && (
+          <>
+            <div className="filters" aria-hidden>
+              {Object.keys(SAMPLE).map((key) => (
+                <button
+                  key={key}
+                  className={key === section ? "active" : ""}
+                  onClick={() => navigate(`/seccion/${key}`)}
+                >
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </button>
+              ))}
+            </div>
 
-        <div style={{ display: "flex", gap: 10, justifyContent: "center", marginBottom: 18 }}>
-          {subOptions.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => handleSetSub(opt)}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 10,
-                border: opt.toLowerCase() === sub.toLowerCase() ? "2px solid #0b0b1d" : "1px solid #e6e6e6",
-                background: opt.toLowerCase() === sub.toLowerCase() ? "#0b0b1d" : "#fff",
-                color: opt.toLowerCase() === sub.toLowerCase() ? "#fff" : "#111",
-                cursor: "pointer"
-              }}
-            >
-              {opt === "todas" || opt === "Todos" ? "Todas" : opt}
-            </button>
-          ))}
-        </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center", marginBottom: 18 }}>
+              {subOptions.map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => handleSetSub(opt)}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: 10,
+                    border: opt.toLowerCase() === sub.toLowerCase() ? "2px solid #0b0b1d" : "1px solid #e6e6e6",
+                    background: opt.toLowerCase() === sub.toLowerCase() ? "#0b0b1d" : "#fff",
+                    color: opt.toLowerCase() === sub.toLowerCase() ? "#fff" : "#111",
+                    cursor: "pointer"
+                  }}
+                >
+                  {opt === "todas" || opt === "Todos" ? "Todas" : opt}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
         <GridCategorias items={items} />
       </main>
