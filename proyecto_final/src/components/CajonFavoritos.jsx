@@ -4,15 +4,18 @@ import { useFavorites } from "../context/FavoritesContext";
 export default function CajonFavoritos() {
   const { favorites, removeFavorite, popFavorite, clearFavorites, open, closeFavorites } = useFavorites();
 
-  if (!open) return null;
-
   // favorites is bottom->top, mostrar top primero
   const items = favorites.slice().reverse();
 
   const total = items.reduce((s, i) => s + (i.price || 0), 0);
 
   return (
-    <aside className="cart-drawer" role="dialog" aria-label="Favoritos">
+    <aside
+      className={`cart-drawer ${open ? "open" : "closed"}`}
+      role="dialog"
+      aria-label="Favoritos"
+      aria-hidden={!open}
+    >
       <div className="cart-header">
         <h3>Favoritos</h3>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>

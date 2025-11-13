@@ -4,12 +4,16 @@ import { useCart } from "../context/CartContex";
 export default function CajonCarrito() {
   const { cart, addToCart, decreaseQty, removeFromCart, clearCart, open, closeCart } = useCart();
 
-  if (!open) return null;
-
+  // siempre render para animaciones; manejamos visibilidad con clases
   const total = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
 
   return (
-    <aside className="cart-drawer" role="dialog" aria-label="Carrito">
+    <aside
+      className={`cart-drawer ${open ? "open" : "closed"}`}
+      role="dialog"
+      aria-label="Carrito"
+      aria-hidden={!open}
+    >
       <div className="cart-header">
         <h3>Carrito</h3>
         <button onClick={closeCart}>Cerrar</button>
@@ -28,7 +32,7 @@ export default function CajonCarrito() {
                 <button className="remove-btn" onClick={() => decreaseQty(p.id)}>-</button>
                 <strong>{p.qty}</strong>
                 <button onClick={() => addToCart(p)}>+</button>
-                <strong style={{ marginLeft: 8 }}>${p.price * p.qty}</strong>
+                <strong style={{ marginLeft: 8 }}>${(p.price * p.qty).toFixed(2)}</strong>
                 <button className="remove-btn" onClick={() => removeFromCart(p.id)} style={{ marginLeft: 8 }}>Eliminar</button>
               </div>
             </div>
@@ -39,7 +43,7 @@ export default function CajonCarrito() {
 
       <div className="cart-total">
         <span>Total</span>
-        <span>${total}</span>
+        <span>${total.toFixed(2)}</span>
       </div>
 
       <button className="process-btn" onClick={() => { clearCart(); closeCart(); }}>Finalizar compra</button>

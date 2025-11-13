@@ -3,14 +3,14 @@ import { useCart } from "../context/CartContex";
 import { useFavorites } from "../context/FavoritesContext";
 import { FiShoppingCart } from "react-icons/fi";
 
-export default function TarjetaProducto({ item }) {
+export default function TarjetaProducto({ item, style }) {
   const { addToCart } = useCart();
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   const fav = isFavorite(item.id);
 
   return (
-    <article className="card">
+    <article className="card" style={style}>
       <div style={{ position: "relative" }}>
         <img src={item.image} alt={item.name} />
         {item.badge && (

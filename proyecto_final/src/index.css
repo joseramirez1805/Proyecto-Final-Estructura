@@ -331,7 +331,7 @@ body{
   font-weight:700;
 }
 
-/* ensure nav search shrinks on small screens */
+/* asegurar que el search de la nav se encoja en pantallas pequeñas */
 @media (max-width: 980px) {
   .search-bar input{ width:180px; }
   .banner-text h1{ font-size:36px; }
@@ -344,3 +344,88 @@ body{
   .product-grid{ grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); }
   .cart-drawer{ width:100%; }
 }
+
+/* Animaciones de entrada para tarjetas (fade + up) */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px) scale(.995); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Animación pop para badge / contador */
+@keyframes pop {
+  0% { transform: scale(.8); opacity: 0.6; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Aplicar animación por defecto a .card pero controlamos delay desde JS */
+.card {
+  opacity: 0;
+  transform: translateY(10px) scale(.995);
+  animation: fadeUp 420ms cubic-bezier(.2,.9,.2,1) forwards;
+  will-change: transform, opacity;
+}
+
+/* Favoritos: contador circular */
+.favorite-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: white;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center;
+  box-shadow: 0 6px 14px rgba(14,20,40,0.12);
+}
+
+/* Clase que aplicaremos temporalmente para pop */
+.favorite-badge.pop {
+  animation: pop 380ms cubic-bezier(.2,.9,.2,1);
+}
+
+/* Cajones (carrito / favoritos): animar entrada/salida desde la derecha */
+.cart-drawer {
+  transform: translateX(110%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 360ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease, visibility 0ms linear 360ms;
+}
+
+/* cuando está abierto, se muestra */
+.cart-drawer.open {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+  transition: transform 360ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease, visibility 0ms;
+}
+
+/* estado de cierre instantáneo para accesibilidad */
+.cart-drawer.closed {
+  transform: translateX(110%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 300ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease, visibility 0ms linear 300ms;
+}
+
+/* Pequeños efectos en botones: hover elevación y foco */
+button {
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+button:active { transform: translateY(1px) scale(.995); }
+button:hover { box-shadow: 0 8px 18px rgba(2,6,23,0.06); }
+
+/* input focus leve */
+input:focus {
+  box-shadow: 0 6px 20px rgba(99,102,241,0.06);
+  transform: translateY(0);
+}
+
+/* efecto suave para el dropdown (ya definido, pero reforzamos) */
+.nav-dropdown { transition: opacity 160ms ease, transform 160ms ease, visibility 160ms; }
