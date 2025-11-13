@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useCart } from "../context/CartContex";
+import { useFavorites } from "../context/FavoritesContext"; // <- agregado
 
 const SUBS = {
   inicio: ["Todas", "Ropa", "Zapatos", "Accesorios", "Chaquetas"],
@@ -12,6 +13,7 @@ const SUBS = {
 
 export default function Cabecera() {
   const { toggleCart } = useCart();
+  const { toggleFavorites } = useFavorites(); // <- agregado
   const [openKey, setOpenKey] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
   const [authTab, setAuthTab] = useState("register");
@@ -85,18 +87,19 @@ export default function Cabecera() {
             <input placeholder="Buscar productos..." />
           </div>
 
-          {/* Icono Favoritos */}
-          <Link
-            to="/favoritos"
+          {/* Icono Favoritos: ahora abre cajón en vez de navegar */}
+          <button
+            type="button"
             className="icon-btn"
             title="Favoritos"
             aria-label="Favoritos"
+            onClick={toggleFavorites}
             style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M12.1 21.35l-1.1-.99C5.14 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.54 0 3.04.99 3.57 2.36h.87C13.46 4.99 14.96 4 16.5 4 19 4 21 6 21 8.5c0 3.78-3.14 6.86-8.9 11.86l-1.0.99z" fill="#e11d48" />
             </svg>
-          </Link>
+          </button>
 
           {/* Icono Usuario / Login (abre modal) */}
           <button
