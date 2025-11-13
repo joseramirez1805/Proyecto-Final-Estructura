@@ -200,7 +200,19 @@ export default function Cabecera() {
             </button>
           )}
 
-          <button onClick={toggleCart} style={{ padding: 8, borderRadius: 8 }}>Carrito</button>
+          <button
+            onClick={toggleCart}
+            className="icon-btn"
+            title="Abrir carrito"
+            aria-label="Abrir carrito"
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 8, borderRadius: 8 }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45C8.89 16.37 9.5 17 10.25 17h7.45v-2H10.25l.9-1.63L20 6H7z" fill="#0f172a" />
+              <circle cx="10.5" cy="20.5" r="1.5" fill="#0f172a" />
+              <circle cx="18.5" cy="20.5" r="1.5" fill="#0f172a" />
+            </svg>
+          </button>
         </div>
       </div>
 
