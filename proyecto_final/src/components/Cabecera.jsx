@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useCart } from "../context/CartContex";
 import { useFavorites } from "../context/FavoritesContext"; // <- agregado
+import { useAuth } from "../context/AuthContext";
 
 const SUBS = {
   inicio: ["Todas", "Ropa", "Zapatos", "Accesorios", "Chaquetas"],
@@ -18,8 +19,23 @@ export default function Cabecera() {
   const [showAuth, setShowAuth] = useState(false);
   const [authTab, setAuthTab] = useState("register");
   const hideTimer = useRef(null);
+  // auth (moved to AuthContext)
+  const { user, loading, error: authErrorFromCtx, register, login, logout } = useAuth();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  // local form states & validation
+  const [regName, setRegName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regConfirm, setRegConfirm] = useState("");
+
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const [localError, setLocalError] = useState("");
 
   useEffect(() => {
+    // cleanup hideTimer on unmount
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
@@ -36,6 +52,45 @@ export default function Cabecera() {
   const handleLeave = () => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
     hideTimer.current = setTimeout(() => setOpenKey(null), 200); // delay to allow mouse move
+  };
+
+  // useAuth.register/login handle actual Firebase calls; keep client-side validation here
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLocalError("");
+    if (!regName || !regEmail || !regPassword) {
+      setLocalError("Rellena los campos obligatorios.");
+      return;
+    }
+    if (regPassword !== regConfirm) {
+      setLocalError("Las contraseñas no coinciden.");
+      return;
+    }
+    const result = await register(regName.trim(), regEmail.trim(), regPassword);
+    if (result.ok) {
+      setShowAuth(false);
+      setRegName(""); setRegEmail(""); setRegPassword(""); setRegConfirm("");
+      setLocalError("");
+    } else {
+      setLocalError(result.error || "Error al crear la cuenta.");
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLocalError("");
+    if (!loginEmail || !loginPassword) {
+      setLocalError("Rellena email y contraseña.");
+      return;
+    }
+    const result = await login(loginEmail.trim(), loginPassword);
+    if (result.ok) {
+      setShowAuth(false);
+      setLoginEmail(""); setLoginPassword("");
+      setLocalError("");
+    } else {
+      setLocalError(result.error || "Error al iniciar sesión.");
+    }
   };
 
   return (
@@ -101,19 +156,49 @@ export default function Cabecera() {
             </svg>
           </button>
 
-          {/* Icono Usuario / Login (abre modal) */}
-          <button
-            type="button"
-            onClick={() => { setShowAuth(true); setAuthTab('login'); }}
-            className="icon-btn"
-            title="Iniciar sesión"
-            aria-label="Iniciar sesión"
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#0f172a" />
-            </svg>
-          </button>
+          {/* Usuario: si está logueado mostrar menú, si no abrir modal */}
+          {user ? (
+            <div style={{ position: 'relative' }}>
+              <button
+                className="icon-btn"
+                onClick={() => setUserMenuOpen((s) => !s)}
+                aria-haspopup="true"
+                aria-expanded={userMenuOpen}
+                title="Mi cuenta"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
+              >
+                <span style={{ width:24, height:24, borderRadius:999, background:'#0f172a', color:'#fff', display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:12 }}>{user.displayName ? user.displayName.charAt(0).toUpperCase() : (user.email||'U').charAt(0).toUpperCase()}</span>
+                <span style={{ fontSize:13, color:'#0f172a' }}>{user.displayName ? user.displayName.split(' ')[0] : user.email}</span>
+                <span>▾</span>
+              </button>
+
+              {userMenuOpen && (
+                <div style={{ position:'absolute', right:0, top:40, background:'#fff', boxShadow:'0 6px 18px rgba(2,6,23,0.12)', borderRadius:8, minWidth:180, padding:10, zIndex:1300 }}>
+                  <div style={{ padding:'8px 10px', borderBottom:'1px solid #eef2f7' }}>
+                    <div style={{ fontSize:14, fontWeight:700 }}>Mi Cuenta</div>
+                  </div>
+                  <div style={{ padding:'10px' }}>
+                    <div style={{ fontWeight:600 }}>{user.displayName || user.email}</div>
+                    <div style={{ color:'#64748b', fontSize:13 }}>{user.email}</div>
+                  </div>
+                  <button className="link-like" style={{ width:'100%', textAlign:'left', padding:'10px', borderTop:'1px solid #eef2f7', background:'transparent', border:'none', cursor:'pointer' }} onClick={async () => { await logout(); setUserMenuOpen(false); }}>Cerrar sesión</button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { setShowAuth(true); setAuthTab('login'); setAuthError(""); }}
+              className="icon-btn"
+              title="Iniciar sesión"
+              aria-label="Iniciar sesión"
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#0f172a" />
+              </svg>
+            </button>
+          )}
 
           <button onClick={toggleCart} style={{ padding: 8, borderRadius: 8 }}>Carrito</button>
         </div>
@@ -134,25 +219,27 @@ export default function Cabecera() {
             </div>
 
             {authTab === 'register' ? (
-              <form className="auth-form" onSubmit={(e) => { e.preventDefault(); /* integrar auth */ }}>
+              <form className="auth-form" onSubmit={handleRegister}>
+                {(localError || authErrorFromCtx) && <p style={{ color: '#b91c1c' }}>{localError || authErrorFromCtx}</p>}
                 <label>Nombre completo</label>
-                <input placeholder="Juan Pérez" />
+                <input value={regName} onChange={(e) => setRegName(e.target.value)} placeholder="Juan Pérez" />
                 <label>Email</label>
-                <input placeholder="tu@email.com" />
+                <input value={regEmail} onChange={(e) => setRegEmail(e.target.value)} placeholder="tu@email.com" />
                 <label>Contraseña</label>
-                <input type="password" placeholder="••••••••" />
+                <input type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} placeholder="••••••••" />
                 <label>Confirmar contraseña</label>
-                <input type="password" placeholder="••••••••" />
-                <button className="primary">Crear cuenta</button>
+                <input type="password" value={regConfirm} onChange={(e) => setRegConfirm(e.target.value)} placeholder="••••••••" />
+                <button className="primary" disabled={loading}>{loading ? 'Creando...' : 'Crear cuenta'}</button>
                 <p className="auth-foot">¿Ya tienes cuenta? <button type="button" className="link-like" onClick={() => setAuthTab('login')}>Inicia sesión aquí</button></p>
               </form>
             ) : (
-              <form className="auth-form" onSubmit={(e) => { e.preventDefault(); /* integrar login */ }}>
+              <form className="auth-form" onSubmit={handleLogin}>
+                {(localError || authErrorFromCtx) && <p style={{ color: '#b91c1c' }}>{localError || authErrorFromCtx}</p>}
                 <label>Email</label>
-                <input placeholder="tu@email.com" />
+                <input value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="tu@email.com" />
                 <label>Contraseña</label>
-                <input type="password" placeholder="••••••••" />
-                <button className="primary">Iniciar Sesión</button>
+                <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="••••••••" />
+                <button className="primary" disabled={loading}>{loading ? 'Entrando...' : 'Iniciar Sesión'}</button>
                 <p className="auth-foot">¿No tienes cuenta? <button type="button" className="link-like" onClick={() => setAuthTab('register')}>Regístrate aquí</button></p>
               </form>
             )}
