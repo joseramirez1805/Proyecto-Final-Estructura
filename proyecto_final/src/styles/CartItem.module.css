@@ -1,0 +1,10 @@
+/* Estilos para CartItem.jsx */
+.cartItem {
+  display:flex;
+  gap:0.75rem;
+  align-items:center;
+}
+
+.cartItem .meta { flex:1 }
+.qty { display:flex; gap:0.25rem; align-items:center }
+.price { font-weight:700 }

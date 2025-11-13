@@ -1,0 +1,7 @@
+/* Estilos para GridCategorias.jsx */
+.gridCategorias {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+.item { background:#fff; padding:0.5rem; border-radius:6px; text-align:center }

@@ -1,0 +1,45 @@
+/* Estilos para TarjetaProducto.jsx */
+.card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.badge.discount { background: #ffecec; color: #b33; }
+.badge.new { background: #e8fff0; color: #067a3d; }
+
+.favorite-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.overlay-btn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-info {
+  padding: 0.75rem;
+}
+
+.category { font-size: 0.75rem; color: #666; }
+.name { font-weight: 700; margin-top: 0.25rem; }
+.price { margin-top: 0.5rem; display:flex; gap:0.5rem; align-items:baseline; }
+.old-price { text-decoration: line-through; color: #999; font-size:0.9rem }

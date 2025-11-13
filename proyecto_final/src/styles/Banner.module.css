@@ -1,0 +1,15 @@
+/* Estilos para Banner.jsx */
+.banner {
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+.bannerImage { width: 100%; height: auto; display:block }
+.bannerText {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}

@@ -1,0 +1,11 @@
+/* Estilos para CartDrawer.jsx */
+.drawer {
+  width: 360px;
+  background:#fff;
+  height:100%;
+  box-shadow: -8px 0 24px rgba(0,0,0,0.12);
+  padding: 1rem;
+}
+
+.drawer-header { display:flex; justify-content:space-between; align-items:center }
+.drawer-items { margin-top: 0.75rem }

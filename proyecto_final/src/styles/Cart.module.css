@@ -1,0 +1,7 @@
+/* Estilos para Cart.jsx */
+.cart {
+  padding: 1rem;
+}
+
+.cart-list { display:flex; flex-direction:column; gap:0.75rem }
+.cart-total { margin-top:1rem; display:flex; justify-content:space-between; font-weight:700 }

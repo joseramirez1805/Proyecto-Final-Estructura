@@ -1,0 +1,55 @@
+/* Estilos para Header.jsx */
+.header {
+  background: var(--bg-header, #fff);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-primary, #111);
+  text-decoration: none;
+}
+
+.menu {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.nav-dropdown {
+  position: relative;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-item-wrapper {
+  position: relative;
+}
+
+.nav-item {
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  font-weight: 700;
+  color: var(--color-accent, #0b6);
+}

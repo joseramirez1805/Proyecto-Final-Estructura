@@ -1,0 +1,38 @@
+/* Estilos para Cabecera.jsx (versión en español de Header) */
+.header {
+  background: var(--bg-header, #fff);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.logo {
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--color-primary, #111);
+  text-decoration: none;
+}
+
+.menu {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-item-wrapper.open {
+  background: rgba(0,0,0,0.03);
+  border-radius: 6px;
+}
+
+.nav-item {
+  padding: 0.35rem 0.5rem;
+}
+
+.nav-item.active {
+  color: var(--color-accent, #0b6);
+}
