@@ -273,8 +273,8 @@ body{
   display:inline-block;
   max-width:760px;
   margin-left:40px;
-  /* Fondo más transparente para que se vea mejor la imagen de fondo */
-  background-color: rgba(243,244,246,0.50); /* reducido de 0.95 a 0.50 */
+  /* Fondo más opaco para dar contraste con la imagen de fondo (texto se mantiene tal como está) */
+  background-color: rgba(243,244,246,0.50);
   padding:22px 26px;
   border-radius:14px;
   line-height:1.1;
@@ -284,15 +284,20 @@ body{
 .banner-text h1{
   font-size:56px;
   margin:6px 0 8px;
-  color:#0b0b1d;
+  color:#071025; /* color más oscuro para máximo contraste */
   font-weight:800;
 }
 .banner-text small{
-  color:#6b7280;
-  font-weight:700;
+  color:#071025; /* hacer el texto de la etiqueta más visible */
+  font-weight:800;
   letter-spacing:1px;
 }
-.banner-text p{ color:#374151; font-size:1rem; margin-top:4px; }
+.banner-text p{
+  color:#0b1220; /* párrafo con mayor contraste */
+  font-size:1rem;
+  margin-top:6px;
+  font-weight:600;
+}
 
 /* Estilos para los botones dentro del banner */
 .banner-cta{

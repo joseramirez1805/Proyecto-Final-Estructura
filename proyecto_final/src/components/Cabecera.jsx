@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContex";
 import { useFavorites } from "../context/FavoritesContext";
 import { useAuth } from "../context/AuthContext";
@@ -10,6 +10,8 @@ export default function Cabecera() {
   const { toggleCart } = useCart();
   const { toggleFavorites, favorites } = useFavorites();
   const { user, loading, error: authErrorFromCtx, register, login, logout } = useAuth();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [openKey, setOpenKey] = useState(null);
   const hideTimer = useRef(null);
@@ -131,7 +133,14 @@ export default function Cabecera() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div className="search-bar">
-            <input placeholder="Buscar productos..." />
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const q = (searchTerm || "").trim();
+              if (!q) return;
+              navigate(`/seccion/inicio?q=${encodeURIComponent(q)}`);
+            }}>
+              <input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Buscar productos..." />
+            </form>
           </div>
 
           <button

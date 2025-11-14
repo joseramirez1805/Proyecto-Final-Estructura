@@ -6,6 +6,7 @@ import CajonCarrito from "./components/CajonCarrito";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import CajonFavoritos from "./components/CajonFavoritos";
 import HelpBot from "./components/HelpBot"; // <- agregado
+import Footer from "./components/Footer";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         </Routes>
 
         <HelpBot /> {/* aparece en todas las páginas */}
+        <Footer />
       </CartProvider>
     </FavoritesProvider>
   );

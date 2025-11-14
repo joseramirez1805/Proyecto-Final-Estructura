@@ -15,12 +15,27 @@ export default function Seccion() {
   const query = useQuery();
   const navigate = useNavigate();
   const sub = query.get("sub") || "todas";
+  const q = query.get("q") || "";
 
   const items = useMemo(() => {
     const base = SAMPLE[section] || [];
-    if (sub === "todas" || sub === "Todos" || sub === "todas") return base;
-    return base.filter((i) => i.subcategory && i.subcategory.toLowerCase() === sub.toLowerCase());
-  }, [section, sub]);
+    let filtered = base;
+    if (!(sub === "todas" || sub === "Todos" || sub === "todas")) {
+      filtered = base.filter((i) => i.subcategory && i.subcategory.toLowerCase() === sub.toLowerCase());
+    }
+
+    if (q && q.trim().length > 0) {
+      const qq = q.trim().toLowerCase();
+      filtered = filtered.filter((i) => {
+        const name = (i.name || "").toString().toLowerCase();
+        const cat = (i.category || "").toString().toLowerCase();
+        const subc = (i.subcategory || "").toString().toLowerCase();
+        return name.includes(qq) || cat.includes(qq) || subc.includes(qq);
+      });
+    }
+
+    return filtered;
+  }, [section, sub, q]);
 
   const subOptions = SUB_OPTIONS[section] || ["todas"];
 
@@ -40,6 +55,16 @@ export default function Seccion() {
       <main className="main container">
         <h1 style={{ textTransform: "capitalize" }}>{section === "inicio" ? "Inicio" : section}</h1>
         <p className="subtitle">Descubre nuestra selección cuidadosamente elegida de los mejores productos</p>
+
+        {q && (
+          <div style={{ textAlign: "center", marginTop: 12, marginBottom: 12 }}>
+            {items.length > 0 ? (
+              <span>Resultados para "<strong>{q}</strong>": {items.length}</span>
+            ) : (
+              <span>No se encontraron resultados para "<strong>{q}</strong>"</span>
+            )}
+          </div>
+        )}
 
         {}
         {section !== "inicio" && (
