@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContex";
 import { useFavorites } from "../context/FavoritesContext";
 import { useAuth } from "../context/AuthContext";
 import { SUB_OPTIONS } from "../utils/datos";
+import { createPortal } from "react-dom";
 
 export default function Cabecera() {
   const { toggleCart } = useCart();
@@ -13,7 +14,7 @@ export default function Cabecera() {
   const [openKey, setOpenKey] = useState(null);
   const hideTimer = useRef(null);
 
-  // auth modal state
+  // auth modal
   const [showAuth, setShowAuth] = useState(false);
   const [authTab, setAuthTab] = useState("login");
   const [regName, setRegName] = useState("");
@@ -24,7 +25,7 @@ export default function Cabecera() {
   const [loginPassword, setLoginPassword] = useState("");
   const [localError, setLocalError] = useState("");
 
-  // favorito pulse
+  // Favoritos pulse
   const [favPulse, setFavPulse] = useState(false);
   useEffect(() => {
     setFavPulse(true);
@@ -37,6 +38,13 @@ export default function Cabecera() {
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!showAuth) return;
+    const onKey = (e) => { if (e.key === "Escape") setShowAuth(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showAuth]);
 
   const handleEnter = (key) => {
     if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null; }
@@ -112,7 +120,7 @@ export default function Cabecera() {
                       to={`/seccion/${key}${sub.toLowerCase() === "todas" ? "" : `?sub=${encodeURIComponent(sub)}`}`}
                       className="nav-dropdown-link"
                     >
-                      {sub === "todas" || sub === "todas" ? "Todas" : sub}
+                      {sub.toLowerCase() === "todas" ? "Todas" : sub}
                     </Link>
                   ))}
                 </div>
@@ -172,47 +180,133 @@ export default function Cabecera() {
         </div>
       </div>
 
-      {showAuth && (
-        <div className="auth-overlay" role="dialog" aria-modal="true">
-          <div className="auth-modal" role="document">
-            <button className="auth-close" aria-label="Cerrar" onClick={() => setShowAuth(false)}>×</button>
+      {/* auth modal rendered via portal so it's floating above the whole page */}
+      {showAuth && createPortal(
+        <div
+          className="auth-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setShowAuth(false)} // click outside closes
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15,23,42,0.45)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1400,
+            padding: 20
+          }}
+        >
+          <div
+            className="auth-modal"
+            role="document"
+            onClick={(e) => e.stopPropagation()} // prevent overlay close when clicking inside
+            style={{
+              width: 520,
+              maxWidth: "100%",
+              borderRadius: 14,
+              padding: 22,
+              background: "#fff",
+              boxShadow: "0 14px 40px rgba(2,6,23,0.18)",
+              position: "relative"
+            }}
+          >
+            <button
+              aria-label="Cerrar"
+              onClick={() => setShowAuth(false)}
+              style={{ position: "absolute", right: 14, top: 10, background: "transparent", border: "none", fontSize: 22, cursor: "pointer" }}
+            >
+              ×
+            </button>
 
-            <h3 className="auth-title">Bienvenido</h3>
-            <p className="auth-sub">Accede o crea una cuenta</p>
+            <h3 className="auth-title" style={{ margin: "6px 0 2px", fontSize: 20, color: "#0f172a" }}>Bienvenido a SHOP</h3>
+            <p className="auth-sub" style={{ margin: 0, color: "#64748b", fontSize: 13 }}>Crea una cuenta o inicia sesión para continuar</p>
 
-            <div className="auth-tabs" role="tablist">
-              <button className={authTab === 'register' ? 'tab active' : 'tab'} onClick={() => setAuthTab('register')}>Registrarse</button>
-              <button className={authTab === 'login' ? 'tab active' : 'tab'} onClick={() => setAuthTab('login')}>Iniciar Sesión</button>
+            <div style={{ display: "flex", gap: 8, background: "#f1f5f9", padding: 6, borderRadius: 999, marginTop: 14 }}>
+              <button
+                onClick={() => setAuthTab("register")}
+                className={authTab === "register" ? "tab active" : "tab"}
+                style={{
+                  flex: 1,
+                  padding: 10,
+                  borderRadius: 999,
+                  border: "none",
+                  background: authTab === "register" ? "#fff" : "transparent",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                Registrarse
+              </button>
+              <button
+                onClick={() => setAuthTab("login")}
+                className={authTab === "login" ? "tab active" : "tab"}
+                style={{
+                  flex: 1,
+                  padding: 10,
+                  borderRadius: 999,
+                  border: "none",
+                  background: authTab === "login" ? "#fff" : "transparent",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                Iniciar Sesión
+              </button>
             </div>
 
-            {authTab === 'register' ? (
-              <form className="auth-form" onSubmit={handleRegister}>
-                {(localError || authErrorFromCtx) && <p style={{ color: '#b91c1c' }}>{localError || authErrorFromCtx}</p>}
-                <label>Nombre completo</label>
-                <input value={regName} onChange={(e) => setRegName(e.target.value)} placeholder="Juan Pérez" />
-                <label>Email</label>
-                <input value={regEmail} onChange={(e) => setRegEmail(e.target.value)} placeholder="tu@email.com" />
-                <label>Contraseña</label>
-                <input type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} placeholder="••••••••" />
-                <label>Confirmar contraseña</label>
-                <input type="password" value={regConfirm} onChange={(e) => setRegConfirm(e.target.value)} placeholder="••••••••" />
-                <button className="primary" disabled={loading}>{loading ? 'Creando...' : 'Crear cuenta'}</button>
-              </form>
-            ) : (
-              <form className="auth-form" onSubmit={handleLogin}>
-                {(localError || authErrorFromCtx) && <p style={{ color: '#b91c1c' }}>{localError || authErrorFromCtx}</p>}
-                <label>Email</label>
-                <input value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="tu@email.com" />
-                <label>Contraseña</label>
-                <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="••••••••" />
-                <button className="primary" disabled={loading}>{loading ? 'Entrando...' : 'Iniciar Sesión'}</button>
-              </form>
-            )}
+            <div style={{ marginTop: 16 }}>
+              {authTab === "register" ? (
+                <form className="auth-form" onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {(localError || authErrorFromCtx) && <p style={{ color: "#b91c1c", margin: 0 }}>{localError || authErrorFromCtx}</p>}
+
+                  <label style={{ fontSize: 13, color: "#475569" }}>Nombre completo</label>
+                  <input value={regName} onChange={(e) => setRegName(e.target.value)} placeholder="Juan Pérez" style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid #e6edf3", background: "#fbfdff", outline: "none" }} />
+
+                  <label style={{ fontSize: 13, color: "#475569" }}>Email</label>
+                  <input value={regEmail} onChange={(e) => setRegEmail(e.target.value)} placeholder="tu@email.com" style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid #e6edf3", background: "#fbfdff" }} />
+
+                  <label style={{ fontSize: 13, color: "#475569" }}>Contraseña</label>
+                  <input type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} placeholder="••••••••" style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid #e6edf3", background: "#fbfdff" }} />
+
+                  <label style={{ fontSize: 13, color: "#475569" }}>Confirmar contraseña</label>
+                  <input type="password" value={regConfirm} onChange={(e) => setRegConfirm(e.target.value)} placeholder="••••••••" style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid #e6edf3", background: "#fbfdff" }} />
+
+                  <button className="primary" disabled={loading} style={{ marginTop: 6, background: "#0f172a", color: "#fff", border: "none", padding: "14px 16px", borderRadius: 12, fontWeight: 700, cursor: "pointer" }}>
+                    {loading ? "Creando..." : "Crear cuenta"}
+                  </button>
+
+                  <p style={{ textAlign: "center", color: "#475569", marginTop: 6 }}>
+                    ¿Ya tienes cuenta? <button type="button" onClick={() => setAuthTab("login")} style={{ background: "none", border: "none", color: "#0f172a", fontWeight: 700, cursor: "pointer" }}>Inicia sesión aquí</button>
+                  </p>
+                </form>
+              ) : (
+                <form className="auth-form" onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {(localError || authErrorFromCtx) && <p style={{ color: "#b91c1c", margin: 0 }}>{localError || authErrorFromCtx}</p>}
+
+                  <label style={{ fontSize: 13, color: "#475569" }}>Email</label>
+                  <input value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="tu@email.com" style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid #e6edf3", background: "#fbfdff" }} />
+
+                  <label style={{ fontSize: 13, color: "#475569" }}>Contraseña</label>
+                  <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="••••••••" style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid #e6edf3", background: "#fbfdff" }} />
+
+                  <button className="primary" disabled={loading} style={{ marginTop: 6, background: "#0f172a", color: "#fff", border: "none", padding: "14px 16px", borderRadius: 12, fontWeight: 700, cursor: "pointer" }}>
+                    {loading ? "Entrando..." : "Iniciar sesión"}
+                  </button>
+
+                  <p style={{ textAlign: "center", color: "#475569", marginTop: 6 }}>
+                    ¿No tienes cuenta? <button type="button" onClick={() => setAuthTab("register")} style={{ background: "none", border: "none", color: "#0f172a", fontWeight: 700, cursor: "pointer" }}>Regístrate aquí</button>
+                  </p>
+                </form>
+              )}
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      <style>{`.menu .nav-item { padding:8px 12px; border-radius:8px; text-decoration:none; color:#222; display:inline-flex; gap:8px; align-items:center; } .menu .nav-item.active { background:#f1f5f9; } .icon-btn { background: transparent; border: none; padding:6px; border-radius:8px; cursor: pointer; color: inherit; } .auth-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.45); display:flex; align-items:center; justify-content:center; z-index:1200; padding: 24px; } .auth-modal { width: 420px; max-width: calc(100% - 48px); background: #fff; border-radius:12px; padding: 22px; box-shadow: 0 10px 30px rgba(2,6,23,0.4); } .primary { margin-top:8px; background:#0f172a; color:#fff; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:600; }`}</style>
+      {/* ...existing styles inline or other code... */}
     </header>
   );
 }
