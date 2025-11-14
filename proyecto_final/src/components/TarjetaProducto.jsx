@@ -12,7 +12,16 @@ export default function TarjetaProducto({ item, style }) {
   return (
     <article className="card" style={style}>
       <div style={{ position: "relative" }}>
-        <img src={item.image} alt={item.name} />
+        <img
+          src={item.image}
+          alt={item.name}
+          loading="lazy"
+          onError={(e) => {
+            
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = `https://picsum.photos/seed/${item.id}/800/600`;
+          }}
+        />
         {item.badge && (
           <div className={`badge ${item.badge === "discount" ? "discount" : "new"}`}>
             {item.badge === "discount" ? "Oferta" : "Nuevo"}
