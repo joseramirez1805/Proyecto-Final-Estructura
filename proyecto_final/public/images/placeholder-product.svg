@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <rect width="100%" height="100%" fill="#f3f4f6"/>
+  <g fill="#9CA3AF" font-family="Arial, Helvetica, sans-serif" font-size="28" text-anchor="middle">
+    <text x="50%" y="45%">Imagen</text>
+    <text x="50%" y="55%">no disponible</text>
+  </g>
+  <g stroke="#E5E7EB" stroke-width="6">
+    <rect x="60" y="60" width="680" height="480" fill="none"/>
+  </g>
+</svg>

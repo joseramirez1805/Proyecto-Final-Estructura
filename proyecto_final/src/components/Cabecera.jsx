@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContex";
 import { useFavorites } from "../context/FavoritesContext";
 import { useAuth } from "../context/AuthContext";
@@ -7,16 +7,19 @@ import { SUB_OPTIONS } from "../utils/datos";
 import { createPortal } from "react-dom";
 
 export default function Cabecera() {
-  const { toggleCart } = useCart();
+  const { toggleCart, cart } = useCart();
   const { toggleFavorites, favorites } = useFavorites();
   const { user, loading, error: authErrorFromCtx, register, login, logout } = useAuth();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
 
   const [openKey, setOpenKey] = useState(null);
   const hideTimer = useRef(null);
+  const location = useLocation();
 
-  // auth modal
+  
   const [showAuth, setShowAuth] = useState(false);
   const [authTab, setAuthTab] = useState("login");
   const [regName, setRegName] = useState("");
@@ -27,7 +30,7 @@ export default function Cabecera() {
   const [loginPassword, setLoginPassword] = useState("");
   const [localError, setLocalError] = useState("");
 
-  // Favoritos pulse
+  
   const [favPulse, setFavPulse] = useState(false);
   useEffect(() => {
     setFavPulse(true);
@@ -43,10 +46,51 @@ export default function Cabecera() {
 
   useEffect(() => {
     if (!showAuth) return;
-    const onKey = (e) => { if (e.key === "Escape") setShowAuth(false); };
+    const onKey = (e) => { if (e.key === "Escape") closeAuth(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [showAuth]);
+
+  
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const auth = params.get('auth');
+    if (auth === 'login' || auth === 'register') {
+      setAuthTab(auth === 'register' ? 'register' : 'login');
+      setShowAuth(true);
+      setLocalError('');
+    }
+  }, [location.search]);
+  
+  const closeAuth = useCallback(() => {
+    setShowAuth(false);
+    try {
+      const params = new URLSearchParams(location.search);
+      params.delete('auth');
+      params.delete('return');
+      params.delete('ts');
+      const base = location.pathname || '/';
+      const search = params.toString();
+      navigate(`${base}${search ? `?${search}` : ''}`, { replace: true });
+    } catch (err) {
+      console.warn(err);
+    }
+  }, [location.search, location.pathname, navigate]);
+
+  
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (!userMenuRef.current) return;
+      if (e.type === 'keydown' && e.key === 'Escape') { setUserMenuOpen(false); return; }
+      if (e.type === 'mousedown' && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onDoc);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onDoc);
+    };
+  }, []);
 
   const handleEnter = (key) => {
     if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null; }
@@ -72,6 +116,12 @@ export default function Cabecera() {
     if (res.ok) {
       setShowAuth(false);
       setRegName(""); setRegEmail(""); setRegPassword(""); setRegConfirm("");
+     
+      try {
+        const params = new URLSearchParams(location.search);
+        const ret = params.get('return');
+        if (ret === 'cart') toggleCart();
+  } catch (err) { console.warn(err); }
     } else {
       setLocalError(res.error || "Error al crear la cuenta.");
     }
@@ -85,6 +135,15 @@ export default function Cabecera() {
     if (res.ok) {
       setShowAuth(false);
       setLoginEmail(""); setLoginPassword("");
+      
+      try {
+        const params = new URLSearchParams(location.search);
+        const ret = params.get('return');
+        if (ret === 'cart') {
+          
+          toggleCart();
+        }
+      } catch (err) { console.warn(err); }
     } else {
       setLocalError(res.error || "Error al iniciar sesión.");
     }
@@ -163,12 +222,63 @@ export default function Cabecera() {
           </button>
 
           {user ? (
-            <div style={{ position: 'relative' }}>
-              <button className="icon-btn" onClick={() => {}} title="Mi cuenta" aria-haspopup="true">
+            <div style={{ position: 'relative' }} ref={userMenuRef}>
+              <button
+                className="icon-btn"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                title="Mi cuenta"
+                aria-haspopup="true"
+                aria-expanded={userMenuOpen}
+              >
                 <span style={{ width:24, height:24, borderRadius:999, background:'#0f172a', color:'#fff', display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:12 }}>
                   {user.displayName ? user.displayName.charAt(0).toUpperCase() : (user.email || 'U').charAt(0).toUpperCase()}
                 </span>
               </button>
+
+              {userMenuOpen && (
+                <div
+                  role="menu"
+                  aria-label="Menú de usuario"
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    marginTop: 8,
+                    background: '#fff',
+                    borderRadius: 10,
+                    boxShadow: '0 10px 30px rgba(2,6,23,0.12)',
+                    padding: 8,
+                    minWidth: 180,
+                    zIndex: 1600
+                  }}
+                >
+                  <div style={{ padding: '8px 10px', borderBottom: '1px solid #eef2f7', color: '#0f172a' }}>
+                    <div style={{ fontWeight: 700 }}>{user.displayName || (user.email || 'Usuario')}</div>
+                    {user.email && <div style={{ fontSize: 12, color: '#64748b' }}>{user.email}</div>}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await logout();
+                      setUserMenuOpen(false);
+                      navigate('/seccion/inicio');
+                    }}
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '10px',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#b91c1c',
+                      fontWeight: 700,
+                    }}
+                    role="menuitem"
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button
@@ -185,17 +295,54 @@ export default function Cabecera() {
             </button>
           )}
 
-          <button onClick={toggleCart} style={{ padding: 8, borderRadius: 8 }}>Carrito</button>
+          <button
+            type="button"
+            className="icon-btn"
+            title="Carrito"
+            aria-label="Abrir carrito"
+            onClick={toggleCart}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45C8.89 16.37 9.4 17 10.09 17h8.72v-2H10.42c-.06 0-.11-.03-.14-.08l.03-.06L11.1 14h5.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49L20.42 4H7z" fill="#0f172a" />
+            </svg>
+
+            {}
+            {cart && cart.length > 0 && (
+              <span
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  top: -6,
+                  right: -6,
+                  minWidth: 18,
+                  height: 18,
+                  padding: '0 6px',
+                  borderRadius: 999,
+                  background: '#ef4444',
+                  color: '#fff',
+                  fontSize: 12,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 700,
+                }}
+                className="cart-badge"
+              >
+                {cart.reduce((s, it) => s + (it.qty || 0), 0)}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* auth modal rendered via portal so it's floating above the whole page */}
+      {}
       {showAuth && createPortal(
         <div
           className="auth-overlay"
           role="dialog"
           aria-modal="true"
-          onClick={() => setShowAuth(false)} // click outside closes
+          onClick={closeAuth} 
           style={{
             position: "fixed",
             inset: 0,
@@ -210,7 +357,7 @@ export default function Cabecera() {
           <div
             className="auth-modal"
             role="document"
-            onClick={(e) => e.stopPropagation()} // prevent overlay close when clicking inside
+            onClick={(e) => e.stopPropagation()} 
             style={{
               width: 520,
               maxWidth: "100%",
@@ -223,7 +370,7 @@ export default function Cabecera() {
           >
             <button
               aria-label="Cerrar"
-              onClick={() => setShowAuth(false)}
+              onClick={closeAuth}
               style={{ position: "absolute", right: 14, top: 10, background: "transparent", border: "none", fontSize: 22, cursor: "pointer" }}
             >
               ×
@@ -315,7 +462,7 @@ export default function Cabecera() {
         document.body
       )}
 
-      {/* ...existing styles inline or other code... */}
+      {}
     </header>
   );
 }

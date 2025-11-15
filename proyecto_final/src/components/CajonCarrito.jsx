@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { useCart } from "../context/CartContex";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function CajonCarrito() {
   const { cart, addToCart, decreaseQty, removeFromCart, clearCart, open, closeCart } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [address, setAddress] = useState("");
+  const [orderMsg, setOrderMsg] = useState("");
 
-  // siempre render para animaciones; manejamos visibilidad con clases
+  
   const total = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
 
   return (
@@ -46,8 +52,51 @@ export default function CajonCarrito() {
         <span>${total.toFixed(2)}</span>
       </div>
 
-      <button className="process-btn" onClick={() => { clearCart(); closeCart(); }}>Finalizar compra</button>
-      <button className="clear-btn" onClick={clearCart}>Vaciar carrito</button>
+      {orderMsg ? (
+        <div style={{ padding: 12, background: '#ecfdf5', borderRadius: 8, color: '#065f46', marginBottom: 10 }}>{orderMsg}</div>
+      ) : null}
+
+      {user ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <label style={{ fontSize: 13, color: '#475569' }}>Dirección de entrega</label>
+          <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Calle, número, ciudad, código postal" style={{ padding: 10, borderRadius: 8, border: '1px solid #e6edf3' }} />
+          <div style={{ fontSize: 13, color: '#334155' }}>Método de pago: <strong>Pago contra entrega</strong></div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              className="process-btn"
+              onClick={() => {
+                if (!address || address.trim().length < 5) {
+                  setOrderMsg('Por favor ingresa una dirección válida.');
+                  return;
+                }
+                const name = user.displayName || (user.email ? user.email.split('@')[0] : 'Cliente');
+                setOrderMsg(`Felicitaciones por tu compra ${name}, tu pedido llegará en las próximas 24 horas.`);
+                
+                clearCart();
+                setTimeout(() => {
+                  closeCart();
+                }, 1200);
+              }}
+            >
+              Pedir
+            </button>
+            <button className="clear-btn" onClick={() => { setAddress(''); setOrderMsg(''); }}>Cancelar</button>
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            className="process-btn"
+            onClick={() => {
+             
+              navigate(`/seccion/inicio?auth=login&return=cart&ts=${Date.now()}`);
+            }}
+          >
+            Finalizar compra
+          </button>
+          <button className="clear-btn" onClick={clearCart}>Vaciar carrito</button>
+        </div>
+      )}
     </aside>
   );
 }

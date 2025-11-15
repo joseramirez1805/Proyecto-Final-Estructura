@@ -18,20 +18,24 @@ export default function Seccion() {
   const q = query.get("q") || "";
 
   const items = useMemo(() => {
-    const base = SAMPLE[section] || [];
-    let filtered = base;
-    if (!(sub === "todas" || sub === "Todos" || sub === "todas")) {
-      filtered = base.filter((i) => i.subcategory && i.subcategory.toLowerCase() === sub.toLowerCase());
-    }
+   
+    const allProducts = Object.keys(SAMPLE).reduce((acc, key) => acc.concat(SAMPLE[key] || []), []);
 
     if (q && q.trim().length > 0) {
       const qq = q.trim().toLowerCase();
-      filtered = filtered.filter((i) => {
+      return allProducts.filter((i) => {
         const name = (i.name || "").toString().toLowerCase();
         const cat = (i.category || "").toString().toLowerCase();
         const subc = (i.subcategory || "").toString().toLowerCase();
         return name.includes(qq) || cat.includes(qq) || subc.includes(qq);
       });
+    }
+
+    
+    const base = SAMPLE[section] || [];
+    let filtered = base;
+    if (!(sub === "todas" || sub === "Todos" || sub === "todas")) {
+      filtered = base.filter((i) => i.subcategory && i.subcategory.toLowerCase() === sub.toLowerCase());
     }
 
     return filtered;
