@@ -5,6 +5,8 @@ import {
   signOut as fbSignOut,
   updateProfile,
   onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../firebase/config";
 
@@ -81,6 +83,22 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const signInWithGoogle = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      setLoading(false);
+      return { ok: true };
+    } catch (e) {
+      const msg = mapFirebaseError(e);
+      setError(msg);
+      setLoading(false);
+      return { ok: false, error: msg };
+    }
+  };
+
   const logout = async () => {
     try {
       await fbSignOut(auth);
@@ -90,7 +108,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, register, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, error, register, login, logout, signInWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );

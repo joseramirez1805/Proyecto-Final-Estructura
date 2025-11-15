@@ -17,7 +17,7 @@ const firebaseConfig = {
   messagingSenderId: "709706011083",
   appId: "1:709706011083:web:3f5fa72c10e4195d5d664e",
   // Añade aquí la URL de Realtime DB (la que mostraste en la imagen)
-  databaseURL: "https://base-de-datos-proyecto-estr2-default-rtdb.firebaseio.com"
+  databaseURL: "https://proyecto-final-668ee-default-rtdb.firebaseio.com/"
 };
 
 const app = initializeApp(firebaseConfig);

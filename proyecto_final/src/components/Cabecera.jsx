@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 export default function Cabecera() {
   const { toggleCart, cart } = useCart();
   const { toggleFavorites, favorites } = useFavorites();
-  const { user, loading, error: authErrorFromCtx, register, login, logout } = useAuth();
+  const { user, loading, error: authErrorFromCtx, register, login, logout, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -17,6 +17,8 @@ export default function Cabecera() {
 
   const [openKey, setOpenKey] = useState(null);
   const hideTimer = useRef(null);
+ 
+
   const location = useLocation();
 
   
@@ -409,6 +411,28 @@ export default function Cabecera() {
                 }}
               >
                 Iniciar Sesión
+              </button>
+            </div>
+
+            {/* Sign in with Google */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+              <button
+                type="button"
+                onClick={async () => {
+                  setLocalError("");
+                  const res = await signInWithGoogle();
+                  if (res.ok) setShowAuth(false);
+                  else setLocalError(res.error || 'Error al iniciar con Google');
+                }}
+                style={{ display:'inline-flex', gap:8, alignItems:'center', padding:'8px 12px', borderRadius:8, border:'1px solid #e6edf3', background:'#fff', cursor:'pointer' }}
+              >
+                <svg width="18" height="18" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M533.5 278.4c0-18.5-1.6-36.3-4.7-53.6H272v101.5h146.9c-6.3 34-25.2 62.8-53.8 82.1v68.1h86.9c50.8-46.8 81.5-116 81.5-197.8z" fill="#4285F4"/>
+                  <path d="M272 544.3c73.6 0 135.4-24.4 180.6-66.4l-86.9-68.1c-24.1 16.2-55 25.8-93.7 25.8-72 0-132.9-48.6-154.8-113.9H28.6v71.5C73.9 485.4 165 544.3 272 544.3z" fill="#34A853"/>
+                  <path d="M117.2 324.7c-10.8-32.5-10.8-67.5 0-100l-72.9-71.5C10.8 201.8 0 239.3 0 278.4s10.8 76.6 44.3 124.9l72.9-78.6z" fill="#FBBC05"/>
+                  <path d="M272 109.7c39 0 74.2 13.4 101.8 39.6l76.3-76.3C407.8 25.8 345.9 0 272 0 165 0 73.9 58.9 28.6 146.2l72.9 71.5C139.1 158.3 200 109.7 272 109.7z" fill="#EA4335"/>
+                </svg>
+                Iniciar con Google
               </button>
             </div>
 
