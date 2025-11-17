@@ -5,6 +5,7 @@ import { useFavorites } from "../context/FavoritesContext";
 import { useAuth } from "../context/AuthContext";
 import { SUB_OPTIONS } from "../utils/datos";
 import { createPortal } from "react-dom";
+import { registerUser, loginUser } from "../firebase/authHandlers";
 
 export default function Cabecera() {
   const { toggleCart, cart } = useCart();
@@ -114,16 +115,10 @@ export default function Cabecera() {
       setLocalError("Las contraseñas no coinciden.");
       return;
     }
-    const res = await register(regName.trim(), regEmail.trim(), regPassword);
+    const res = await registerUser(register, { name: regName.trim(), email: regEmail.trim(), password: regPassword }, { toggleCart, locationSearch: location.search });
     if (res.ok) {
       setShowAuth(false);
       setRegName(""); setRegEmail(""); setRegPassword(""); setRegConfirm("");
-     
-      try {
-        const params = new URLSearchParams(location.search);
-        const ret = params.get('return');
-        if (ret === 'cart') toggleCart();
-  } catch (err) { console.warn(err); }
     } else {
       setLocalError(res.error || "Error al crear la cuenta.");
     }
@@ -133,19 +128,10 @@ export default function Cabecera() {
     e.preventDefault();
     setLocalError("");
     if (!loginEmail || !loginPassword) { setLocalError("Rellena email y contraseña."); return; }
-    const res = await login(loginEmail.trim(), loginPassword);
+    const res = await loginUser(login, { email: loginEmail.trim(), password: loginPassword }, { toggleCart, locationSearch: location.search });
     if (res.ok) {
       setShowAuth(false);
       setLoginEmail(""); setLoginPassword("");
-      
-      try {
-        const params = new URLSearchParams(location.search);
-        const ret = params.get('return');
-        if (ret === 'cart') {
-          
-          toggleCart();
-        }
-      } catch (err) { console.warn(err); }
     } else {
       setLocalError(res.error || "Error al iniciar sesión.");
     }
