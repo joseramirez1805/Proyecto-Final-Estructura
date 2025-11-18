@@ -10,20 +10,19 @@ import { getDatabase } from "firebase/database";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyD3vyQ3uficFteGdYq_D51JXsJSMc1VHyU",
-  authDomain: "proyecto-final-668ee.firebaseapp.com",
-  projectId: "proyecto-final-668ee",
-  storageBucket: "proyecto-final-668ee.firebasestorage.app",
-  messagingSenderId: "709706011083",
-  appId: "1:709706011083:web:3f5fa72c10e4195d5d664e",
-  // Añade aquí la URL de Realtime DB (la que mostraste en la imagen)
-  databaseURL: "https://proyecto-final-668ee-default-rtdb.firebaseio.com/"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth()
-const firebaseStorage = getStorage(app)
-const db = getFirestore()
-const rtdb = getDatabase(app) // <-- exportamos la base en tiempo real
+const auth = getAuth(app);
+const firebaseStorage = getStorage(app);
+const db = getFirestore(app);
+const rtdb = getDatabase(app); // <-- exportamos la base en tiempo real
 
 export { app, auth, firebaseStorage, db, rtdb };
